@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shouryabansal7/blog-go/internal/auth"
 	"github.com/shouryabansal7/blog-go/internal/database"
 )
 
@@ -38,7 +39,23 @@ func(apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	respondWithJSON(w,200,databaseUserToUser(user))
+	respondWithJSON(w,201,databaseUserToUser(user))
+}
 
-	respondWithJSON(w,200,struct{}{})
+func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request){
+	apiKey, err := auth.GetAPIKey(r.Header)
+
+	if err!=nil {
+		responseWithError(w,403,fmt.Sprintf("Auth error: %v",err))
+		return
+	}
+
+	user, err:=apiCfg.DB.GetUserByAPIKey(r.Context(),apiKey)
+
+	if err!=nil {
+		responseWithError(w,400,fmt.Sprintf("Couldn't get user: %v",err))
+		return
+	}
+
+	respondWithJSON(w,200,databaseUserToUser(user))
 }
