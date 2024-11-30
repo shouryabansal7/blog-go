@@ -21,7 +21,7 @@ func(apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request
 	err := decoder.Decode(&params)
 
 	if err!=nil {
-		responseWithError(w,400,fmt.Sprintf("Error parsing json",err))
+		responseWithError(w,400,fmt.Sprintf("Error parsing json: %v",err))
 		return
 	}
 
